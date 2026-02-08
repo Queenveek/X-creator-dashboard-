@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>𝕏 Creator Studio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0a0a0a;
+            --bg-card: #141414;
+            --bg-input: #1a1a1a;
+            --accent-primary: #00ff88;
+            --accent-secondary: #00ddff;
+            --text-primary: #ffffff;
+            --text-secondary: #888888;
+            --border: #2a2a2a;
+            --gradient-1: linear-gradient(135deg, #00ff88 0%, #00ddff 100%);
+            --gradient-2: linear-gradient(135deg, rgba(0,255,136,0.1) 0%, rgba(0,221,255,0.1) 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Animated background grid */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(rgba(0,255,136,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,255,136,0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 20s linear infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        header {
+            margin-bottom: 3rem;
+            animation: slideDown 0.8s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            font-family: 'Archivo Black', sans-serif;
+            font-size: 4rem;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.05em;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            animation: fadeIn 1s ease-out 0.2s both;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gradient-1);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .card:hover {
+            border-color: var(--accent-primary);
+            transform: translateY(-2px);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-title {
+            font-family: 'Archivo Black', sans-serif;
+            font-size: 1.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .badge {
+            background: var(--gradient-2);
+            border: 1px solid var(--accent-primary);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        textarea, input {
+            width: 100%;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            resize: vertical;
+        }
+
+        textarea:focus, input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(0,255,136,0.1);
+        }
+
+        textarea {
+            min-height: 150px;
+        }
+
+        .char-count {
+            text-align: right;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+        }
+
+        .char-count.warning {
+            color: #ffaa00;
+        }
+
+        .char-count.error {
+            color: #ff4444;
+        }
+
+        button {
+            background: var(--gradient-1);
+            border: none;
+            color: var(--bg-dark);
+            padding: 0.875rem 1.75rem;
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0,255,136,0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button span {
+            position: relative;
+            z-index: 1;
+        }
+
+        button.secondary {
+            background: transparent;
+            border: 1px solid var(--accent-primary);
+            color: var(--accent-primary);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .hooks-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-top: 1rem;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .hook-item {
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            padding: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            animation: hookSlideIn 0.4s ease-out both;
+        }
+
+        @keyframes hookSlideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .hook-item:hover {
+            border-color: var(--accent-primary);
+            background: rgba(0,255,136,0.05);
+            transform: translateX(5px);
+        }
+
+        .schedule-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .scheduled-post {
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--accent-primary);
+            padding: 1rem;
+            border-radius: 8px;
+            animation: postFadeIn 0.5s ease-out both;
+        }
+
+        @keyframes postFadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .scheduled-time {
+            color: var(--accent-primary);
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .scheduled-text {
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .post-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .post-actions button {
+            padding: 0.5rem 1rem;
+            font-size: 0.75rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .stat-card {
+            background: var(--gradient-2);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+            transition: all 0.3s ease;
+            animation: statPop 0.6s ease-out both;
+        }
+
+        @keyframes statPop {
+            0% {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .stat-card:nth-child(1) { animation-delay: 0.1s; }
+        .stat-card:nth-child(2) { animation-delay: 0.2s; }
+        .stat-card:nth-child(3) { animation-delay: 0.3s; }
+
+        .stat-card:hover {
+            background: rgba(0,255,136,0.15);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,255,136,0.2);
+        }
+
+        .stat-value {
+            font-family: 'Archivo Black', sans-serif;
+            font-size: 2.5rem;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            margin-top: 0.5rem;
+        }
+
+        .analytics-chart {
+            margin-top: 1.5rem;
+            height: 200px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chart-bars {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            height: 100%;
+            gap: 0.5rem;
+        }
+
+        .chart-bar {
+            flex: 1;
+            background: var(--gradient-1);
+            border-radius: 4px 4px 0 0;
+            position: relative;
+            transition: all 0.3s ease;
+            animation: barGrow 0.8s ease-out both;
+        }
+
+        @keyframes barGrow {
+            from {
+                height: 0 !important;
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .chart-bar:hover {
+            opacity: 0.8;
+            transform: scaleY(1.05);
+        }
+
+        .chart-bar:nth-child(1) { animation-delay: 0.1s; }
+        .chart-bar:nth-child(2) { animation-delay: 0.2s; }
+        .chart-bar:nth-child(3) { animation-delay: 0.3s; }
+        .chart-bar:nth-child(4) { animation-delay: 0.4s; }
+        .chart-bar:nth-child(5) { animation-delay: 0.5s; }
+        .chart-bar:nth-child(6) { animation-delay: 0.6s; }
+        .chart-bar:nth-child(7) { animation-delay: 0.7s; }
+
+        .loading {
+            text-align: center;
+            color: var(--text-secondary);
+            padding: 2rem;
+            font-style: italic;
+        }
+
+        .loading::after {
+            content: '...';
+            animation: dots 1.5s steps(4, end) infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+
+        .empty-state {
+            text-align: center;
+            color: var(--text-secondary);
+            padding: 3rem 2rem;
+            font-style: italic;
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-input);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent-primary);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-secondary);
+        }
+
+        @media (max-width: 968px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .schedule-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>𝕏 Creator Studio</h1>
+            <p class="subtitle">AI-Powered Content Creation</p>
+        </header>
+
+        <div class="main-grid">
+            <!-- Post Composer -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Compose Post</h2>
+                    <span class="badge">Write</span>
+                </div>
+                <textarea id="postContent" placeholder="What's happening?"></textarea>
+                <div class="char-count" id="charCount">0 / 280</div>
+                <div class="button-group">
+                    <button onclick="schedulePost()"><span>Schedule Post</span></button>
+                    <button class="secondary" onclick="generateHooks()"><span>Generate Hooks</span></button>
+                </div>
+            </div>
+
+            <!-- AI Hook Generator -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">AI Hook Generator</h2>
+                    <span class="badge">AI</span>
+                </div>
+                <input type="text" id="hookTopic" placeholder="Enter topic or theme...">
+                <div class="button-group">
+                    <button onclick="generateHooks()"><span>Generate Hooks</span></button>
+                </div>
+                <div class="hooks-list" id="hooksList"></div>
+            </div>
+
+            <!-- Scheduled Posts -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Scheduled Posts</h2>
+                    <span class="badge" id="scheduleCount">0</span>
+                </div>
+                <div class="schedule-grid" id="scheduledPosts">
+                    <div class="empty-state">No scheduled posts yet. Start creating!</div>
+                </div>
+            </div>
+
+            <!-- Analytics Dashboard -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Analytics</h2>
+                    <span class="badge">Live</span>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalLikes">0</div>
+                        <div class="stat-label">Total Likes</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalReplies">0</div>
+                        <div class="stat-label">Replies</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalImpressions">0</div>
+                        <div class="stat-label">Impressions</div>
+                    </div>
+                </div>
+                <div class="analytics-chart">
+                    <div class="chart-bars" id="chartBars"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State management
+        let scheduledPosts = [];
+        let analytics = {
+            likes: 0,
+            replies: 0,
+            impressions: 0,
+            dailyData: []
+        };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadFromStorage();
+            updateCharCount();
+            renderScheduledPosts();
+            updateAnalytics();
+            generateSampleChart();
+        });
+
+        // Character counter
+        document.getElementById('postContent').addEventListener('input', updateCharCount);
+
+        function updateCharCount() {
+            const content = document.getElementById('postContent').value;
+            const count = content.length;
+            const counter = document.getElementById('charCount');
+            counter.textContent = `${count} / 280`;
+            
+            counter.classList.remove('warning', 'error');
+            if (count > 280) {
+                counter.classList.add('error');
+            } else if (count > 240) {
+                counter.classList.add('warning');
+            }
+        }
+
+        // Generate AI hooks
+        async function generateHooks() {
+            const topic = document.getElementById('hookTopic').value || 'general content creation';
+            const hooksList = document.getElementById('hooksList');
+            
+            hooksList.innerHTML = '<div class="loading">Generating hooks</div>';
+            
+            // Simulate AI generation
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            
+            const hooks = [
+                `🚀 ${topic.charAt(0).toUpperCase() + topic.slice(1)} changed everything for me. Here's what I learned:`,
+                `The truth about ${topic} nobody talks about (thread 🧵)`,
+                `I spent 6 months mastering ${topic}. These 5 insights will save you months:`,
+                `Stop doing ${topic} the hard way. Here's the system that 10x'd my results:`,
+                `Everyone gets ${topic} wrong. Here's what actually works:`,
+                `3 ${topic} mistakes that cost me $10k (so you don't have to)`,
+            ];
+            
+            hooksList.innerHTML = hooks.map((hook, index) => `
+                <div class="hook-item" onclick="useHook('${hook.replace(/'/g, "\\'")}')" style="animation-delay: ${index * 0.1}s">
+                    ${hook}
+                </div>
+            `).join('');
+        }
+
+        function useHook(hook) {
+            document.getElementById('postContent').value = hook;
+            updateCharCount();
+        }
+
+        // Schedule post
+        async function schedulePost() {
+            const content = document.getElementById('postContent').value.trim();
+            
+            if (!content) {
+                alert('Please write some content first!');
+                return;
+            }
+
+            if (content.length > 280) {
+                alert('Post exceeds 280 characters!');
+                return;
+            }
+
+            // Generate a random future time (next 7 days)
+            const now = new Date();
+            const scheduledTime = new Date(now.getTime() + Math.random() * 7 * 24 * 60 * 60 * 1000);
+            
+            const post = {
+                id: Date.now(),
+                content: content,
+                scheduledTime: scheduledTime.toISOString(),
+                status: 'scheduled'
+            };
+
+            scheduledPosts.push(post);
+            saveToStorage();
+            renderScheduledPosts();
+            
+            // Clear input
+            document.getElementById('postContent').value = '';
+            updateCharCount();
+
+            // Add to analytics simulation
+            setTimeout(() => {
+                addPostToAnalytics();
+            }, 1000);
+        }
+
+        function deletePost(id) {
+            scheduledPosts = scheduledPosts.filter(post => post.id !== id);
+            saveToStorage();
+            renderScheduledPosts();
+        }
+
+        function renderScheduledPosts() {
+            const container = document.getElementById('scheduledPosts');
+            const countBadge = document.getElementById('scheduleCount');
+            
+            countBadge.textContent = scheduledPosts.length;
+
+            if (scheduledPosts.length === 0) {
+                container.innerHTML = '<div class="empty-state">No scheduled posts yet. Start creating!</div>';
+                return;
+            }
+
+            // Sort by scheduled time
+            scheduledPosts.sort((a, b) => new Date(a.scheduledTime) - new Date(b.scheduledTime));
+
+            container.innerHTML = scheduledPosts.map((post, index) => {
+                const date = new Date(post.scheduledTime);
+                const formattedTime = date.toLocaleString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
+                return `
+                    <div class="scheduled-post" style="animation-delay: ${index * 0.1}s">
+                        <div class="scheduled-time">📅 ${formattedTime}</div>
+                        <div class="scheduled-text">${post.content.substring(0, 100)}${post.content.length > 100 ? '...' : ''}</div>
+                        <div class="post-actions">
+                            <button class="secondary" onclick="deletePost(${post.id})"><span>Delete</span></button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Analytics functions
+        function addPostToAnalytics() {
+            const likes = Math.floor(Math.random() * 500) + 50;
+            const replies = Math.floor(Math.random() * 50) + 5;
+            const impressions = Math.floor(Math.random() * 5000) + 500;
+
+            analytics.likes += likes;
+            analytics.replies += replies;
+            analytics.impressions += impressions;
+
+            updateAnalytics();
+            saveToStorage();
+        }
+
+        function updateAnalytics() {
+            document.getElementById('totalLikes').textContent = analytics.likes.toLocaleString();
+            document.getElementById('totalReplies').textContent = analytics.replies.toLocaleString();
+            document.getElementById('totalImpressions').textContent = analytics.impressions.toLocaleString();
+        }
+
+        function generateSampleChart() {
+            const chartBars = document.getElementById('chartBars');
+            const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+            
+            const bars = days.map(() => {
+                const height = Math.random() * 80 + 20;
+                return `<div class="chart-bar" style="height: ${height}%"></div>`;
+            }).join('');
+
+            chartBars.innerHTML = bars;
+        }
+
+        // Storage functions
+        function saveToStorage() {
+            try {
+                localStorage.setItem('x_scheduled_posts', JSON.stringify(scheduledPosts));
+                localStorage.setItem('x_analytics', JSON.stringify(analytics));
+            } catch (e) {
+                console.log('Storage not available');
+            }
+        }
+
+        function loadFromStorage() {
+            try {
+                const savedPosts = localStorage.getItem('x_scheduled_posts');
+                const savedAnalytics = localStorage.getItem('x_analytics');
+                
+                if (savedPosts) {
+                    scheduledPosts = JSON.parse(savedPosts);
+                }
+                
+                if (savedAnalytics) {
+                    analytics = JSON.parse(savedAnalytics);
+                }
+            } catch (e) {
+                console.log('Could not load from storage');
+            }
+        }
+
+        // Simulate real-time analytics updates
+        setInterval(() => {
+            if (Math.random() > 0.7) {
+                analytics.likes += Math.floor(Math.random() * 3);
+                analytics.impressions += Math.floor(Math.random() * 20);
+                updateAnalytics();
+            }
+        }, 5000);
+    </script>
+</body>
+</html>
